@@ -30,17 +30,35 @@ def get_connection():
     )
 
 @app.get("/stations")
-def get_stations(provincia: Optional[str] = None, fuel_type: Optional[str] = None):
+def get_stations(
+    page: int = 1,
+    page_size: int = 50,
+    provincia: Optional[str] = None,
+    fuel_type: Optional[str] = None,
+):
+    offset = (page - 1) * page_size
+
     query = "SELECT * FROM gold_fuel_prices_by_type WHERE 1=1"
+
     if provincia:
         query += f" AND provincia = '{provincia}'"
+
     if fuel_type:
         query += f" AND fuel_type = '{fuel_type}'"
-    query += " LIMIT 15000"
+
+    query += f" LIMIT {page_size} OFFSET {offset}"
 
     with get_connection() as conn:
         with conn.cursor() as cursor:
             cursor.execute(query)
+
             columns = [col[0] for col in cursor.description]
             rows = cursor.fetchall()
-            return [dict(zip(columns, row)) for row in rows]
+
+            data = [dict(zip(columns, row)) for row in rows]
+
+            return {
+                "data": data,
+                "page": page,
+                "page_size": page_size,
+            }

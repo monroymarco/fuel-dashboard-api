@@ -14,6 +14,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://localhost:5174",
+        "https://spain-fuel-prices-dashboard.vercel.app",
         "https://spain-fuel-prices-dashboard-cyl1km6ai-skynet23.vercel.app",
     ],
     allow_credentials=True,
